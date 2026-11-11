@@ -1,6 +1,28 @@
+<p align="center">
+  <a href="https://runearc.com/integrations/ruby">
+    <picture>
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/runearc-labs/runearc-ruby/main/.github/assets/banner-light.png">
+      <img alt="Runearc for Ruby. Install with the command shown, then send email and give agents inboxes." src="https://raw.githubusercontent.com/runearc-labs/runearc-ruby/main/.github/assets/banner-dark.png" width="100%">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/runearc-labs/runearc-ruby/blob/main/CHANGELOG.md"><img alt="version 0.1.0" src="https://img.shields.io/badge/version-0.1.0-0007cd?style=flat-square&labelColor=0f0f0f"></a> <a href="https://github.com/runearc-labs/runearc-ruby/blob/main/LICENSE"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-2b2b2b?style=flat-square&labelColor=0f0f0f"></a> <a href="https://runearc.com/integrations/ruby"><img alt="requires ruby 3.0+" src="https://img.shields.io/badge/requires-ruby%203.0%2B-2b2b2b?style=flat-square&labelColor=0f0f0f"></a> <a href="https://runearc.com/docs/sdk"><img alt="tested against the real API" src="https://img.shields.io/badge/tests-real%20API-14833b?style=flat-square&labelColor=0f0f0f"></a>
+</p>
+
+<p align="center">
+  <a href="https://runearc.com"><b>Website</b></a> ·
+  <a href="https://runearc.com/docs/sdk">Docs</a> ·
+  <a href="https://runearc.com/integrations/ruby">Ruby guide</a> ·
+  <a href="https://runearc.com/docs/mcp">MCP</a> ·
+  <a href="https://runearc.com/status">Status</a> ·
+  <a href="https://runearc.com/changelog">Changelog</a>
+</p>
+
 # runearc
 
-Send email and give your agents an inbox, from Ruby.
+The official Ruby SDK for [Runearc](https://runearc.com), email infrastructure for apps and AI agents. Send email and give your agents an inbox, from Ruby.
 
 ```sh
 gem install runearc
