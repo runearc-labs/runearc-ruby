@@ -1,0 +1,171 @@
+module Runearc
+  VERSION: String
+  DEFAULT_BASE_URL: String
+
+  type json = Hash[Symbol, untyped]
+  type time = Time | String
+
+  def self.verify_webhook: (payload: String, headers: untyped, secret: String, ?tolerance: Integer, ?now: Integer?) -> json
+
+  class Error < StandardError
+    attr_reader status: Integer
+    attr_reader code: String
+    attr_reader kind: String?
+    attr_reader fix: String?
+    attr_reader errors: Array[json]?
+    attr_reader retry_after: Integer?
+
+    def initialize: (?String? message, ?status: Integer, ?code: String, ?kind: String?, ?fix: String?, ?errors: Array[json]?, ?retry_after: Integer?) -> void
+    def to_h: () -> Hash[Symbol, untyped]
+  end
+
+  class ConfigurationError < Error
+  end
+
+  class ConnectionError < Error
+  end
+
+  class TimeoutError < ConnectionError
+  end
+
+  class WebhookVerificationError < Error
+  end
+
+  class ApiError < Error
+    def self.build: (String message, status: Integer, **untyped fields) -> ApiError
+  end
+
+  class InvalidRequestError < ApiError
+  end
+
+  class AuthenticationError < ApiError
+  end
+
+  class LimitReachedError < ApiError
+  end
+
+  class PermissionError < ApiError
+  end
+
+  class NotFoundError < ApiError
+  end
+
+  class ConflictError < ApiError
+  end
+
+  class RateLimitError < ApiError
+  end
+
+  class ServerError < ApiError
+  end
+
+  module Webhook
+    TOLERANCE_SECONDS: Integer
+
+    def self.verify: (payload: String, headers: untyped, secret: String, ?tolerance: Integer, ?now: Integer?) -> json
+  end
+
+  class Resource
+    def initialize: (Client client) -> void
+  end
+
+  class Emails < Resource
+    def deliver: (?idempotency_key: String?, ?request_timeout: Numeric?, **untyped email) -> json
+    def batch: (Array[json] emails, ?batch_validation: (String | Symbol)?, ?idempotency_key: String?, ?request_timeout: Numeric?) -> json
+    def get: (String id, ?request_timeout: Numeric?) -> json
+    def list: (?limit: Integer?, ?cursor: String?, ?request_timeout: Numeric?) -> json
+    def update: (String id, scheduled_at: time, ?request_timeout: Numeric?) -> json
+    def reschedule: (String id, time scheduled_at, ?request_timeout: Numeric?) -> json
+    def cancel: (String id, ?request_timeout: Numeric?) -> json
+  end
+
+  class Senders < Resource
+    def list: (?request_timeout: Numeric?) -> json
+  end
+
+  class Inboxes < Resource
+    def create: (?local_part: String?, ?display_name: String?, ?domain: String?, ?request_timeout: Numeric?) -> json
+    def list: (?request_timeout: Numeric?) -> json
+    def get: (String id, ?request_timeout: Numeric?) -> json
+    def delete: (String id, ?request_timeout: Numeric?) -> nil
+  end
+
+  class Messages < Resource
+    def list: (String inbox_id, ?limit: Integer?, ?cursor: String?, ?request_timeout: Numeric?) -> json
+    def get: (String id, ?request_timeout: Numeric?) -> json
+    def raw: (String id, ?request_timeout: Numeric?) -> String
+    def wait: (String inbox_id, ?from: String?, ?subject: String?, ?to: String?, ?timeout: Integer, ?after: time?, ?request_timeout: Numeric?) -> json?
+    def deliver: (String inbox_id, ?idempotency_key: String?, ?request_timeout: Numeric?, **untyped message) -> json
+    def reply: (String message_id, ?idempotency_key: String?, ?request_timeout: Numeric?, **untyped reply) -> json
+  end
+
+  class Threads < Resource
+    def list: (String inbox_id, ?request_timeout: Numeric?) -> json
+    def get: (String id, ?request_timeout: Numeric?) -> json
+  end
+
+  class Conversations < Resource
+    def list: (?status: String?, ?assignee: String?, ?project_id: String?, ?inbox_id: String?, ?q: String?, ?cursor: String?, ?limit: Integer?, ?request_timeout: Numeric?) -> json
+    def counts: (?request_timeout: Numeric?) -> json
+    def update: (String id, ?request_timeout: Numeric?, **untyped fields) -> json
+    def read: (String id, ?request_timeout: Numeric?) -> nil
+    def unread: (String id, ?request_timeout: Numeric?) -> nil
+  end
+
+  class Domains < Resource
+    def create: (name: String, ?request_timeout: Numeric?) -> json
+    def list: (?request_timeout: Numeric?) -> json
+    def get: (String id, ?request_timeout: Numeric?) -> json
+    def delete: (String id, ?request_timeout: Numeric?) -> nil
+    def verify: (String id, ?request_timeout: Numeric?) -> json
+  end
+
+  class Webhooks < Resource
+    def create: (url: String, ?event_types: Array[String]?, ?inbox_id: String?, ?request_timeout: Numeric?) -> json
+    def list: (?request_timeout: Numeric?) -> json
+    def delete: (String id, ?request_timeout: Numeric?) -> nil
+    def deliveries: (String id, ?limit: Integer?, ?request_timeout: Numeric?) -> json
+    def replay: (String id, String delivery_id, ?request_timeout: Numeric?) -> json
+    def verify: (payload: String, headers: untyped, secret: String, ?tolerance: Integer, ?now: Integer?) -> json
+  end
+
+  class Keys < Resource
+    def create: (name: String, ?permissions: String?, ?inbox_id: String?, ?domain_id: String?, ?request_timeout: Numeric?) -> json
+    def list: (?request_timeout: Numeric?) -> json
+    def delete: (String id, ?request_timeout: Numeric?) -> nil
+  end
+
+  class Suppressions < Resource
+    def list: (?request_timeout: Numeric?) -> json
+    def delete: (String address, ?request_timeout: Numeric?) -> nil
+  end
+
+  class Events < Resource
+    def list: (?after: String?, ?limit: Integer?, ?request_timeout: Numeric?) -> json
+  end
+
+  class Client
+    DEFAULT_MAX_RETRIES: Integer
+    DEFAULT_TIMEOUT: Integer
+    MAX_RETRY_WAIT: Integer
+
+    attr_reader base_url: String
+    attr_reader max_retries: Integer
+    attr_reader timeout: Numeric
+    attr_reader emails: Emails
+    attr_reader senders: Senders
+    attr_reader inboxes: Inboxes
+    attr_reader messages: Messages
+    attr_reader threads: Threads
+    attr_reader conversations: Conversations
+    attr_reader domains: Domains
+    attr_reader webhooks: Webhooks
+    attr_reader keys: Keys
+    attr_reader suppressions: Suppressions
+    attr_reader events: Events
+
+    def initialize: (?String? api_key, ?base_url: String?, ?max_retries: Integer, ?timeout: Numeric, ?headers: Hash[String, String]) -> void
+    def inspect: () -> String
+    def request: (Symbol method, String path, ?query: Hash[Symbol, untyped]?, ?body: untyped, ?headers: Hash[String, String]?, ?sends_mail: bool, ?idempotent: bool, ?text: bool, ?idempotency_key: String?, ?request_timeout: Numeric?) -> untyped
+  end
+end
