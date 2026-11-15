@@ -76,7 +76,7 @@ email[:id] # => "eml_..."
 | `base_url:` | `RUNEARC_BASE_URL`, else `https://api.runearc.com` | A trailing `/v1` is fine. |
 | `max_retries:` | `2` | Retries after the first attempt (see [Retries](#retries)). |
 | `timeout:` | `60` | Seconds, per attempt. |
-| `headers:` | none | Sent with every request, such as `"Runearc-Project"`. |
+| `headers:` | none | Sent with every request. |
 
 Responses are the API's JSON as Hashes with symbol keys, and field names are the API's own snake case (`reply_to`, `scheduled_at`, `next_cursor`), so the [API reference](https://runearc.com/docs) and this SDK read the same. Every method also takes `request_timeout:` (seconds, overrides `timeout:` for that call), and the methods that send mail take `idempotency_key:`.
 

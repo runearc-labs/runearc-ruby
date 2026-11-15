@@ -105,7 +105,7 @@ module Runearc
   end
 
   class Conversations < Resource
-    def list: (?status: String?, ?assignee: String?, ?project_id: String?, ?inbox_id: String?, ?q: String?, ?cursor: String?, ?limit: Integer?, ?request_timeout: Numeric?) -> json
+    def list: (?status: String?, ?assignee: String?, ?inbox_id: String?, ?q: String?, ?cursor: String?, ?limit: Integer?, ?request_timeout: Numeric?) -> json
     def counts: (?request_timeout: Numeric?) -> json
     def update: (String id, ?request_timeout: Numeric?, **untyped fields) -> json
     def read: (String id, ?request_timeout: Numeric?) -> nil

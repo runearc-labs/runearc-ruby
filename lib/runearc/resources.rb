@@ -223,20 +223,17 @@ module Runearc
   class Conversations < Resource
     # @param status [String, nil] +"open"+, +"closed"+, +"snoozed"+ or +"all"+
     # @param assignee [String, nil] +"me"+, +"none"+ or a user id
-    # @param project_id [String, nil]
     # @param inbox_id [String, nil]
     # @param q [String, nil] search text
     # @param cursor [String, nil]
     # @param limit [Integer, nil]
     # @return [Hash] +{ data: [...], next_cursor: }+
-    def list(status: nil, assignee: nil, project_id: nil, inbox_id: nil, q: nil, cursor: nil, limit: nil,
-             request_timeout: nil)
-      query = { status: status, assignee: assignee, project_id: project_id, inbox_id: inbox_id, q: q,
-                cursor: cursor, limit: limit }
+    def list(status: nil, assignee: nil, inbox_id: nil, q: nil, cursor: nil, limit: nil, request_timeout: nil)
+      query = { status: status, assignee: assignee, inbox_id: inbox_id, q: q, cursor: cursor, limit: limit }
       call(:get, "/v1/conversations", query: query, request_timeout: request_timeout)
     end
 
-    # @return [Hash] +{ open:, assigned_to_me:, unassigned:, by_project:, by_inbox: }+
+    # @return [Hash] +{ open:, assigned_to_me:, unassigned:, by_inbox: }+
     def counts(request_timeout: nil)
       call(:get, "/v1/conversations/counts", request_timeout: request_timeout)
     end
@@ -303,7 +300,7 @@ module Runearc
   class Webhooks < Resource
     # @param url [String]
     # @param event_types [Array<String>, nil] empty or nil means every event type
-    # @param inbox_id [String, nil] nil means every inbox in the project
+    # @param inbox_id [String, nil] nil means every inbox in the workspace
     # @return [Hash] the webhook with its signing +:secret+ (+whsec_...+), shown once
     def create(url:, event_types: nil, inbox_id: nil, request_timeout: nil)
       body = { url: url, event_types: event_types, inbox_id: inbox_id }.compact

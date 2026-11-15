@@ -134,14 +134,14 @@ class RetriesTest < Minitest::Test
 
   def test_sends_the_key_user_agent_extra_headers_and_a_json_body
     serve { |_req| [201, JSON_TYPE, '{"id":"ibx_1"}'] }
-    mb = Runearc::Client.new("mb_secret", base_url: "#{@stub.url}/v1/", headers: { "Runearc-Project" => "prj_1" })
+    mb = Runearc::Client.new("mb_secret", base_url: "#{@stub.url}/v1/", headers: { "X-Request-Source" => "test" })
     mb.inboxes.create(local_part: "a b", display_name: nil)
     req = @stub.requests.first
     assert_equal "POST", req.verb
     assert_equal "/v1/inboxes", req.path
     assert_equal "Bearer mb_secret", req.headers["authorization"]
     assert_equal "runearc-ruby/#{Runearc::VERSION}", req.headers["user-agent"]
-    assert_equal "prj_1", req.headers["runearc-project"]
+    assert_equal "test", req.headers["x-request-source"]
     assert_equal "application/json", req.headers["content-type"]
     assert_equal({ "local_part" => "a b" }, JSON.parse(req.body))
     refute req.headers.key?("idempotency-key")

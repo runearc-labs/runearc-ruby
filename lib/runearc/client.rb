@@ -77,7 +77,7 @@ module Runearc
     #   A trailing +/v1+ is fine.
     # @param max_retries [Integer] retries after the first attempt, on 429, 5xx and network errors (default 2)
     # @param timeout [Numeric] per attempt timeout in seconds (default 60)
-    # @param headers [Hash{String => String}] extra headers sent with every request, such as +Runearc-Project+
+    # @param headers [Hash{String => String}] extra headers sent with every request
     # @raise [ConfigurationError] when there is no API key
     def initialize(api_key = nil, base_url: nil, max_retries: DEFAULT_MAX_RETRIES, timeout: DEFAULT_TIMEOUT,
                    headers: {})

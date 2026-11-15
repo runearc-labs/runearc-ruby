@@ -96,11 +96,10 @@ class ResourcesTest < Minitest::Test
     # The API has no POST for suppressions (bounces and complaints add them, and simulated test
     # recipients are never suppressed), so one row is added with SQL, the way core's
     # add_suppression stores it.
-    id = @mb.emails.deliver(from: "app@#{stack.domain}", to: test_address, subject: unique("events"), text: "x")[:id]
-    project_id = @mb.emails.get(id)[:project_id]
+    @mb.emails.deliver(from: "app@#{stack.domain}", to: test_address, subject: unique("events"), text: "x")
     address = "blocked-#{Time.now.to_i.to_s(36)}@example.org"
-    Stack.psql(stack.db_url, "INSERT INTO suppressions (org_id, project_id, address, reason) " \
-                             "VALUES ('#{stack.org_id}', '#{project_id}', '#{address}', 'manual')")
+    Stack.psql(stack.db_url, "INSERT INTO suppressions (org_id, address, reason) " \
+                             "VALUES ('#{stack.org_id}', '#{address}', 'manual')")
     assert_equal "manual", @mb.suppressions.list[:data].find { |s| s[:address] == address }[:reason]
     @mb.suppressions.delete(address)
     refute(@mb.suppressions.list[:data].any? { |s| s[:address] == address })
